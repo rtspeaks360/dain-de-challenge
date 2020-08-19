@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:22:30
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 17:07:26
+# @Last Modified time: 2020-08-20 00:37:52
 
 ### Imports START
 import config
@@ -173,19 +173,36 @@ def process_frame_for_day(frame_for_day, stats_frame, last_date_recorded):
 
 	logger.info('Medians computed for {}'.format(last_date_recorded))
 	return stats_frame
+# [END]
+
+
+# [START Function to return the start date]
+def get_start_date(input_file):
+	'''
+	Function to read the first line of the input file and return the start
+	date for the log data.
+	Args:
+		- input file
+	Returns:
+		- start date
+	'''
+	with open(config.BASE_PATH + input_file, 'r') as f:
+		_json = f.readline()
+	first_line = json.loads(_json)
+	return first_line['date']
+# [END]
 
 
 # [START Function to load data in chunks and compute median]
-def process_data_in_chunks(input_file, chunk_size, start_date):
+def process_data_in_chunks(input_file, chunk_size):
 	'''
-	Function to load data in chunks and compute median. The function loada the
+	Function to load data in chunks and compute median. The function loads the
 	data in chunks using the read in chunks function, processes the data in each
 	chunk, handles incomplete lines and computes the data on daily basis.
 
 	Args:
 		- input file
 		- chunk size
-		- start_date
 	Returns:
 		- stats frame
 	'''
@@ -194,7 +211,7 @@ def process_data_in_chunks(input_file, chunk_size, start_date):
 	frame_for_day = pd.DataFrame(columns=['date', 'time', 'input', 'value'])
 	stats_frame = pd.DataFrame(columns=['date', 'input', 'median_value'])
 	leftover = ''
-	last_date_recorded = '2019-01-01'
+	last_date_recorded = get_start_date(input_file)
 
 	# Context to read file
 	with open(config.BASE_PATH + input_file) as f:

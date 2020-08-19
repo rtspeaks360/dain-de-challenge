@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:22:27
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 16:44:57
+# @Last Modified time: 2020-08-20 00:30:34
 
 ### Imports START
 import logging
@@ -42,7 +42,7 @@ def get_median_for_sesnors_full(input_file, target_file):
 
 # [START Procedure to calculate median and create output]
 def get_median_for_sesnors_chunked(
-	input_file, target_file, chunk_size, start_date
+	input_file, target_file, chunk_size
 ):
 	'''
 	Procedure to calculate median and create output while loading data in chunks.
@@ -51,12 +51,13 @@ def get_median_for_sesnors_chunked(
 		- input file
 		- target file
 		- chunk size
-		- start date
+	Rerruns:
+		-
 	'''
 
 	# Load and process chunks
 	logger.info('Laoding data in chunks and processing them')
-	stats_frame = utils.process_data_in_chunks(input_file, chunk_size, start_date)
+	stats_frame = utils.process_data_in_chunks(input_file, chunk_size)
 
 	# output
 	logger.info('Creating output file')
