@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:02:17
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 12:17:11
+# @Last Modified time: 2020-08-19 12:31:29
 
 
 ### Imports START
@@ -28,7 +28,7 @@ def parser_args():
 	)
 
 	parser.add_argument(
-		'--mode', dest='mode', choices=['full', 'batches'], default='batches',
+		'--mode', dest='mode', choices=['full', 'chunked'], default='chunked',
 		help='Use full mode to load the complete input file and batches to \
 		load the input file in chunks,'
 	)
@@ -45,9 +45,15 @@ def parser_args():
 	)
 
 	parser.add_argument(
-		'--target', dest='target', type=str,
+		'--target', dest='target', type=str, default='output.jsonl',
 		help='Use this file to specify the target file in  which the output is\
 		to be stored.'
+	)
+
+	parser.add_argument(
+		'--env', choices=['dev', 'prod'], default='dev',
+		help='Use this argument to specify whether the processes are to be run in a\
+		development environment or production.'
 	)
 
 	# Parsing the arguments received

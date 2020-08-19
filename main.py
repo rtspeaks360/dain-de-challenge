@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:02:45
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 12:19:34
+# @Last Modified time: 2020-08-19 12:36:59
 
 
 ### Imports START
@@ -45,6 +45,9 @@ else:
 	os.environ['ENV-INDICATOR'] = 'DEV'
 
 
+from get_median import core as get_median
+
+
 # [START Main function for the script]
 def main(args):
 	'''
@@ -56,6 +59,17 @@ def main(args):
 	Returns:
 		None
 	'''
+
+	if args.mode == 'full':
+		get_median.get_median_for_sesnors_full(
+			args.input, args.target
+		)
+	elif args.mode == 'chunked':
+		get_median.get_median_for_sesnors_chunked(
+			args.input, args.target, args.chunk_size
+		)
+	else:
+		logger.error('Invalid mode input.')
 	return
 # [END]
 
