@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:02:17
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 12:14:10
+# @Last Modified time: 2020-08-19 12:17:11
 
 
 ### Imports START
@@ -28,14 +28,15 @@ def parser_args():
 	)
 
 	parser.add_argument(
-		'--mode', dest='mode', choice=['full', 'batches'],
+		'--mode', dest='mode', choices=['full', 'batches'], default='batches',
 		help='Use full mode to load the complete input file and batches to \
 		load the input file in chunks,'
 	)
 
 	parser.add_argument(
-		'--chunk_size', dest='chunk_size', type=int,
-		help='Use this to specify the size of chunks in  which the file is loaded.'
+		'--chunk_size', dest='chunk_size', type=int, default=1024 * 1024 * 10,
+		help='Use this to specify the size of chunks in  which the file is \
+		loaded. The default size for the chunks is 10 MB.'
 	)
 
 	parser.add_argument(
