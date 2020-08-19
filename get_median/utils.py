@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:22:30
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 12:51:51
+# @Last Modified time: 2020-08-19 13:23:50
 
 import config
 import json
@@ -68,3 +68,100 @@ def output_to_jsonl(df, target_file):
 	)
 	return
 # [END]
+
+
+def read_in_chunks(file_object, chunk_size=1024 * 1024):
+	'''
+	Lazy function (generator) to read a file piece by piece.
+	Default chunk size: 1MB.
+	'''
+	while True:
+		data = file_object.read(chunk_size)
+		if not data:
+			break
+		yield data
+
+
+def process_chunk(piece, leftover, frame_for_day, last_date_recorded):
+
+	lines = piece.split('\n')
+
+	if len(lines) > 0:
+		# Check if leftover available
+		if leftover != '':
+			lines[0] = (leftover + lines[0]).strip()
+
+		# Check if last line from yield is a complete json
+		try:
+			if lines[-1][-1] != '}':
+				leftover = lines[-1].strip()
+				lowerbound = -2
+			elif lines[-1][-1] != '\n':
+				leftover = lines[-1].strip()
+				lowerbound = -1
+			else:
+				leftover = ''
+				lowerbound = -1
+		except IndexError as e:
+			lowerbound = len(lines) - 1
+
+		lines_frame = pd.DataFrame(lines[0:lowerbound], columns=['json'])
+		lines_frame = pd.json_normalize(lines_frame['json'].apply(json.loads))
+		frame_for_day = frame_for_day.append(lines_frame)
+
+	return leftover, frame_for_day, last_date_recorded
+
+
+def process_frame_for_day(frame_for_day, stats_frame):
+
+	medians_for_day = frame_for_day.groupby(['date', 'input']).median('value')
+	medians_for_day.reset_index(inplace=True)
+	medians_for_day.rename(columns={'value': 'median_value'}, inplace=True)
+	stats_frame = stats_frame.append(medians_for_day)
+	return stats_frame
+
+
+# [START Function to load data in chunks and compute median]
+def process_data_in_chunks(input_file, chunk_size, start_date):
+	'''
+	Function to load data in chunks and compute median. The function loada the
+	data in chunks using the read in chunks function, processes the data in each
+	chunk, handles incomplete lines and computes the data on daily basis.
+
+	Args:
+		- input file
+		- chunk size
+		- start_date
+	Returns:
+		- stats frame
+
+
+	'''
+	# Initialize required variables
+	frame_for_day = pd.DataFrame(columns=['date', 'time', 'input', 'value'])
+	stats_frame = pd.DataFrame(columns=['date', 'input', 'median_value'])
+	leftover = ''
+	last_date_recorded = '2019-01-01'
+
+	with open(config.BASE_PATH + input_file) as f:
+
+		for piece in read_in_chunks(f, chunk_size):
+			leftover, frame_for_day, last_date_recorded = process_chunk(
+				piece, leftover, frame_for_day, last_date_recorded
+			)
+
+			# Check if data for new Zdate has come in
+			if frame_for_day.loc[frame_for_day.date > last_date_recorded].shape[0] > 0:
+				stats_frame = process_frame_for_day(
+					frame_for_day.loc[frame_for_day.date == last_date_recorded], stats_frame
+				)
+				frame_for_day = frame_for_day.loc[
+					~(frame_for_day.date == last_date_recorded)
+				]
+				last_date_recorded = frame_for_day.date.unique()[0]
+
+		stats_frame = process_frame_for_day(
+			frame_for_day, stats_frame
+		)
+
+	return stats_frame
