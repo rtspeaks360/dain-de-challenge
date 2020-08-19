@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:02:17
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 13:10:34
+# @Last Modified time: 2020-08-20 00:38:18
 
 
 ### Imports START
@@ -48,11 +48,6 @@ def parser_args():
 		'--target', dest='target', type=str, default='output.jsonl',
 		help='Use this file to specify the target file in  which the output is\
 		to be stored.'
-	)
-
-	parser.add_argument(
-		'--start_date', dest='start_date', type=str,
-		help='Use this to specify which date are the log files starting from.'
 	)
 
 	parser.add_argument(

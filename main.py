@@ -2,7 +2,7 @@
 # @Author: rish
 # @Date:   2020-08-19 12:02:45
 # @Last Modified by:   rish
-# @Last Modified time: 2020-08-19 13:14:15
+# @Last Modified time: 2020-08-20 00:30:10
 
 
 ### Imports START
@@ -66,7 +66,7 @@ def main(args):
 		)
 	elif args.mode == 'chunked':
 		get_median.get_median_for_sesnors_chunked(
-			args.input, args.target, args.chunk_size, args.start_date
+			args.input, args.target, args.chunk_size
 		)
 	else:
 		logger.error('Invalid mode input.')
